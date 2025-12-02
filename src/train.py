@@ -19,7 +19,6 @@ def train_model(cleaned_csv: str, out_model: str, out_vectorizer: str):
     train_texts, test_texts, train_labels, test_labels = train_test_split(
     texts, labels, test_size=0.2, random_state=42, stratify=labels)
 
-    #
     vectorizer = TfidfVectorizer(
         max_features=12000,
         ngram_range=(1, 3),
@@ -31,7 +30,6 @@ def train_model(cleaned_csv: str, out_model: str, out_vectorizer: str):
     X_train = vectorizer.fit_transform(train_texts)
     X_test = vectorizer.fit_transform(test_texts)
     
-
     # Simple baseline model
     model = LogisticRegression(
         penalty="12",
@@ -47,7 +45,6 @@ def train_model(cleaned_csv: str, out_model: str, out_vectorizer: str):
     predictions = model.predict(X_test)
     print("\nClassification Report:")
     print(classification_report(test_labels, predictions))
-    
     
     #Optimize threshold
     probabilites = model.predict_proba(X_test)[:,1]
