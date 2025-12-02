@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Labor Trafficking Job Post Detector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #111827;
+      --accent: #22c55e;
+      --accent-danger: #ef4444;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2933;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #1f2937, #020617 55%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+      padding: 24px 28px 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .header {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--muted);
+    }
+
+    .subtitle {
+      grid-column: 1 / -1;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 18px 18px 16px;
+      border: 1px solid var(--border);
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 240px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: radial-gradient(circle at top left, #020617, #020617);
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+    }
+
+    .help-text {
+      margin-top: 6px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .btn-row {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.08s ease, box-shadow 0.08s ease,
+        background 0.12s ease, opacity 0.12s ease;
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981, #22c55e);
+      color: #0b1120;
+      box-shadow: 0 12px 30px rgba(34, 197, 94, 0.35);
+    }
+
+    .btn-primary[disabled] {
+      opacity: 0.6;
+      cursor: progress;
+      box-shadow: none;
+    }
+
+    .status {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .result-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--muted);
+    }
+
+    .pill-risk-high .pill-dot {
+      background: var(--accent-danger);
+    }
+
+    .pill-risk-low .pill-dot {
+      background: var(--accent);
+    }
+
+    .score {
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .score span {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--muted);
+      margin-left: 6px;
+    }
+
+    .score-high {
+      color: var(--accent-danger);
+    }
+
+    .score-low {
+      color: var(--accent);
+    }
+
+    .explanation {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .highlight-box {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+      background: rgba(15, 23, 42, 0.8);
+      font-size: 0.8rem;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .highlight-box strong {
+      color: var(--accent-danger);
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div class="title">Labor Trafficking Detector</div>
+      <div class="badge">Prototype · ML + NLP</div>
+    </header>
+
+    <p class="subtitle">
+      Paste a job post or online ad. The model will estimate whether the content
+      might be associated with labor trafficking risks based on text patterns.
+      This is a research prototype, not a definitive legal tool.
+    </p>
+
+    <!-- LEFT: INPUT -->
+    <section class="panel">
+      <h2>1. Job post text</h2>
+      <label for="jobText">Paste the full job description</label>
+      <textarea
+        id="jobText"
+        placeholder="Example: We offer extremely high salary, must relocate immediately, housing controlled by employer, passport will be held for security..."
+      ></textarea>
+      <div class="help-text">
+        Include title, description, requirements, benefits, and any extra
+        details available.
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-outline" id="btnClear">Clear</button>
+        <button type="button" class="btn-primary" id="btnAnalyze">
+          ▶ Analyze job post
+        </button>
+      </div>
+      <div class="status" id="status"></div>
+    </section>
+
+    <!-- RIGHT: OUTPUT -->
+    <section class="panel">
+      <h2>2. Model output</h2>
+      <div class="result-card" id="resultCard">
+        <div class="pill-row">
+          <div class="pill pill-risk-low" id="riskPill">
+            <span class="pill-dot"></span>
+            <span id="riskLabel">No prediction yet</span>
+          </div>
+        </div>
+
+        <div class="score score-low" id="scoreDisplay">
+          --
+          <span>confidence</span>
+        </div>
+
+        <p class="explanation" id="explanation">
+          Submit a job post to see an estimated risk level and confidence score.
+          Highlighted text will show potential red-flag phrases based on simple
+          keyword rules.
+        </p>
+
+        <div class="highlight-box" id="highlightBox">
+          No text analyzed yet.
+        </div>
+
+        <p class="footer-note">
+          This interface is for educational and exploratory purposes only and
+          should not be used as the sole basis for legal or operational
+          decisions.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const btnAnalyze = document.getElementById("btnAnalyze");
+    const btnClear = document.getElementById("btnClear");
+    const jobTextEl = document.getElementById("jobText");
+    const statusEl = document.getElementById("status");
+    const riskPill = document.getElementById("riskPill");
+    const riskLabel = document.getElementById("riskLabel");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+    const explanationEl = document.getElementById("explanation");
+    const highlightBox = document.getElementById("highlightBox");
+
+    const RED_FLAG_KEYWORDS = [
+      "confiscate passport",
+      "passport will be held",
+      "must surrender passport",
+      "live-in",
+      "housing provided by employer",
+      "work 7 days",
+      "no days off",
+      "immediate relocation",
+      "work visa arranged",
+      "cash only",
+      "extremely high salary",
+      "no contract",
+      "no experience required",
+      "work and stay on site",
+      "must stay on premises"
+    ];
+
+    function highlightRedFlags(text) {
+      if (!text.trim()) return "No text analyzed yet.";
+
+      let safe = text;
+      for (const phrase of RED_FLAG_KEYWORDS) {
+        const pattern = new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi");
+        safe = safe.replace(pattern, (match) => `<strong>${match}</strong>`);
+      }
+      return safe;
+    }
+
+    async function analyze() {
+      const rawText = jobTextEl.value.trim();
+      if (!rawText) {
+        statusEl.textContent = "Please paste a job post before analyzing.";
+        return;
+      }
+
+      btnAnalyze.disabled = true;
+      statusEl.textContent = "Running prediction...";
+      riskLabel.textContent = "Predicting...";
+      scoreDisplay.textContent = "--";
+      highlightBox.innerHTML = "Analyzing text...";
+
+      try {
+        const response = await fetch("/api/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: rawText })
+        });
+
+        if (!response.ok) {
+          throw new Error("API error: " + response.status);
+        }
+
+        const data = await response.json();
+        const prob = typeof data.confidence === "number" ? data.confidence : 0;
+        const pred = data.prediction === 1 || data.prediction === "1" ? 1 : 0;
+
+        const confidencePct = (prob * 100).toFixed(1) + "%";
+
+        // Update risk pill
+        riskPill.classList.remove("pill-risk-high", "pill-risk-low");
+        if (pred === 1) {
+          riskPill.classList.add("pill-risk-high");
+          riskLabel.textContent = "High risk (potential trafficking)";
+          scoreDisplay.classList.remove("score-low");
+          scoreDisplay.classList.add("score-high");
+          explanationEl.textContent =
+            "The model flagged this job post as potentially high risk. Review red-flag phrases and contextual details carefully before taking action.";
+        } else {
+          riskPill.classList.add("pill-risk-low");
+          riskLabel.textContent = "Low risk (no strong indicators)";
+          scoreDisplay.classList.remove("score-high");
+          scoreDisplay.classList.add("score-low");
+          explanationEl.textContent =
+            "The model did not detect strong indicators of labor trafficking. However, this is only a supporting tool and should be complemented with human judgment.";
+        }
+
+        scoreDisplay.innerHTML =
+          (prob * 100).toFixed(1) +
+          "% <span>confidence</span>";
+
+        highlightBox.innerHTML = highlightRedFlags(rawText);
+        statusEl.textContent = "Prediction completed.";
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent =
+          "There was an error contacting the prediction API. Check the backend logs.";
+        riskLabel.textContent = "Error";
+        scoreDisplay.textContent = "--";
+        highlightBox.textContent = "Unable to analyze text.";
+      } finally {
+        btnAnalyze.disabled = false;
+      }
+    }
+
+    btnAnalyze.addEventListener("click", analyze);
+
+    btnClear.addEventListener("click", () => {
+      jobTextEl.value = "";
+      statusEl.textContent = "";
+      riskLabel.textContent = "No prediction yet";
+      scoreDisplay.classList.remove("score-high");
+      scoreDisplay.classList.add("score-low");
+      scoreDisplay.innerHTML = "-- <span>confidence</span>";
+      explanationEl.textContent =
+        "Submit a job post to see an estimated risk level and confidence score.";
+      highlightBox.textContent = "No text analyzed yet.";
+    });
+  </script>
+</body>
+</html>
