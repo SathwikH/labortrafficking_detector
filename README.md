@@ -10,6 +10,8 @@ Using TF-IDF features and a Logistic Regression classifier, the tool detects lin
 
 ## Video Link of the Project
 
+https://drive.google.com/file/d/16NMzMMNkFI0wvcj-AbKToXezCS5cjwn9/view?usp=sharing
+
 ## Installation and Setup Instructions
 
 # 1. Clone the repository
