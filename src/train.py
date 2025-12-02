@@ -15,7 +15,6 @@ def train_model(cleaned_csv: str, out_model: str, out_vectorizer: str):
     texts = df["text"].astype(str).tolist()
     labels = df["label"].astype(int).tolist()
 
-
     train_texts, test_texts, train_labels, test_labels = train_test_split(
         texts,
         labels,
@@ -33,16 +32,10 @@ def train_model(cleaned_csv: str, out_model: str, out_vectorizer: str):
     )
 
     X_train = vectorizer.fit_transform(train_texts)
-<<<<<<< HEAD
-    X_test = vectorizer.fit_transform(test_texts)
-    
-    # Simple baseline model
-=======
     X_test = vectorizer.transform(test_texts)
 
->>>>>>> 833f47ad1bd49844f178038a12024d0065bf72b2
     model = LogisticRegression(
-        penalty="l2",            
+        penalty="l2",
         C=2.0,
         class_weight="balanced",
         solver="liblinear",
@@ -54,23 +47,13 @@ def train_model(cleaned_csv: str, out_model: str, out_vectorizer: str):
     predictions = model.predict(X_test)
     print("\nClassification Report:")
     print(classification_report(test_labels, predictions))
-<<<<<<< HEAD
-    
-    #Optimize threshold
-    probabilites = model.predict_proba(X_test)[:,1]
-    
-    #Having a threshold helps catch more suspicious posts
-    #And controls false positives
-    fpr, tpr, thresholds = roc_curve(test_labels, probabilites)
-    best_threshold = thresholds[(tpr - fpr).argmax()]
-=======
 
     probabilities = model.predict_proba(X_test)[:, 1]
-
     fpr, tpr, thresholds = roc_curve(test_labels, probabilities)
+
     best_threshold_idx = (tpr - fpr).argmax()
     best_threshold = thresholds[best_threshold_idx]
->>>>>>> 833f47ad1bd49844f178038a12024d0065bf72b2
+
     print("\nOptimal Threshold:", best_threshold)
 
     print("\nTop Fraud Indicators:")
