@@ -17,7 +17,6 @@ def test_model(cleaned_csv: str, model_path: str, vectorizer_path: str):
     
     X = vectorizer.transform(texts)
 
-    # prediction
     if hasattr(model, "predict_proba"):
         probabilities = model.predict_proba(X)[:, 1]   
         predictions = (probabilities >= 0.5).astype(int)
