@@ -105,5 +105,8 @@ project/
 ├── templates/
 │   └── index.html                   # Frontend UI
 │
+├── report/
+│   └── final_report.pdf             # Final written report (to be added)
+│
 ├── requirements.txt
 └── README.md
